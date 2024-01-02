@@ -23,12 +23,15 @@ jobs:
         python -m pip install --upgrade pip
         pip install tqdm requests
 
-    - name: Download Proxies
+    - name: Run the script
       run: |
         python downloader
 
-    - name: Upload Proxies
-      uses: actions/upload-artifact@v2
-      with:
-        name: proxies
-        path: proxies
+    - name: Commit changes
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Actions"
+
+        git add proxies
+        git commit -m "Update proxies"
+        git push
