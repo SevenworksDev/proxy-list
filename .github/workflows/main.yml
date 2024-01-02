@@ -34,4 +34,5 @@ jobs:
 
         git add proxies
         git commit -m "Update proxies"
-        git push
+        git push https://$GH_TOKEN@github.com/SevenworksDev/proxy-list.git
+
