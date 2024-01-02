@@ -29,7 +29,6 @@
             "https://raw.githubusercontent.com/casals-ar/proxy-list/main/https"
         ],
         "socks4": [
-            "https://www.proxyscan.io/download?type=socks4,",
             "https://raw.githubusercontent.com/roosterkid/openproxylist/main/SOCKS4_RAW.txt",
             "https://raw.githubusercontent.com/monosans/proxy-list/main/proxies_anonymous/socks4.txt",
             "https://raw.githubusercontent.com/MuRongPIG/Proxy-Master/main/socks4.txt",
