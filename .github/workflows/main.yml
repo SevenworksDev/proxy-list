@@ -26,3 +26,9 @@ jobs:
     - name: Download Proxies
       run: |
         python downloader
+
+    - name: Upload Proxies
+      uses: actions/upload-artifact@v2
+      with:
+        name: proxies
+        path: proxies
