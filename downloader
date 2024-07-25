@@ -1,20 +1,35 @@
-import requests, json, os, re
+import requests
+import json
+import os
+import re
 from tqdm import tqdm
-from urllib.parse import urlparse
+
+# Modfied from aiohttp.helpers module's regexes with valid port numbers added in 
+IPV4 = re.compile(
+    r"(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\:[0-9]+"
+)
+IPV6 = re.compile(
+    r"(?:(?:(?:[A-F0-9]{1,4}:){6}|(?=(?:[A-F0-9]{0,4}:){0,6}"
+    r"(?:[0-9]{1,3}\.){3}[0-9]{1,3}$)(([0-9A-F]{1,4}:){0,5}|:)"
+    r"((:[0-9A-F]{1,4}){1,5}:|:)|::(?:[A-F0-9]{1,4}:){5})"
+    r"(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.){3}"
+    r"(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])|(?:[A-F0-9]{1,4}:){7}"
+    r"[A-F0-9]{1,4}|(?=(?:[A-F0-9]{0,4}:){0,7}[A-F0-9]{0,4}$)"
+    r"(([0-9A-F]{1,4}:){1,7}|:)((:[0-9A-F]{1,4}){1,7}|:)|(?:[A-F0-9]{1,4}:){7}"
+    r":|:(:[A-F0-9]{1,4}){7})\:[0-9]+"
+) 
 
 os.makedirs('proxies', exist_ok=True)
 
-def download(type, lists):
+def download(type:str, lists:list[str]):
     proxies = set()
 
     for url in tqdm(lists, desc=f"Downloading {type}", unit="file"):
         response = requests.get(url)
         if response.status_code == 200:
-            proxy = response.text.strip().split('\n')
-            valid = [line.strip() for line in proxy if all(
-                char not in line for char in ['/', '<', '>', '=']
-            ) and line.strip() != '' and len(line) >= 8 and len(line) <= 24 and not re.search('[a-zA-Z]', line)]
-            proxies.update(valid)
+            for proxy in response.text.strip().split('\n'):
+                if matching := (IPV4.search(proxy) or IPV6.search(proxy)):
+                    proxies.add(matching.group(0))
 
     output = os.path.join('proxies', f"{type}.txt")
     with open(output, 'w', encoding='utf-8') as f:
@@ -22,8 +37,15 @@ def download(type, lists):
 
     return output
 
-with open('lists.json', 'r') as json_file:
-    proxylist = json.load(json_file)
 
-for type, lists in proxylist['proxies'].items():
-    output = download(type, lists)
+def main():
+    with open('lists.json', 'r') as json_file:
+        proxylist = json.load(json_file)
+    
+    for type, lists in proxylist['proxies'].items():
+        download(type, lists)
+
+
+if __name__ == "__main__":
+    main()
+
