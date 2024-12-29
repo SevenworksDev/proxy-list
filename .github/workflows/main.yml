@@ -2,7 +2,7 @@ name: Proxy List
 
 on:
   schedule:
-    - cron: '*/20 * * * *'
+    - cron: '*/15 * * * *'
   workflow_dispatch:
 
 jobs:
